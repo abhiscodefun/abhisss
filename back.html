@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login and Study Planner</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('study.jpg'); /* Replace with actual background image URL */
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            color: rgb(0, 0, 0);
+        }
+
+        /* Login Page Styles */
+        .login-container {
+            width: 300px;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            text-align: center;
+            margin: 100px auto;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Study Planner Page Styles */
+        .container {
+            width: 60%;
+            margin: auto;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .task {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #444;
+            border-radius: 5px;
+        }
+
+        .task input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .points {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .input-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        #taskInput {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #addTaskButton {
+            width: 15%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #addTaskButton:hover {
+            background-color: #45a049;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+        }
+
+        /* Chatbot styles */
+        .chat-container {
+            width: 300px;
+            margin: 50px auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        .chat-box {
+            max-height: 80%;
+            overflow-y: scroll;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .message {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #444;
+            border-radius: 5px;
+        }
+
+        .student-message {
+            text-align: right;
+            background-color: #4CAF50;
+        }
+
+        .bot-message {
+            text-align: left;
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginPage" class="login-container">
+        <h1>Student Login</h1>
+        <form onsubmit="return login(event)">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+
+    <!-- Study Planner Page (Initially Hidden) -->
+    <div id="studyPlannerPage" class="container" style="display: block;">
+        <h2>Student Study Planner</h2>
+        
+        <!-- Task Section -->
+        <div id="taskList">
+            <div class="task">
+                <label>Math Homework</label>
+                <input type="checkbox" class="taskCheck" data-points="10">
+            </div>
+            <div class="task">
+                <label>Science Project</label>
+                <input type="checkbox" class="taskCheck" data-points="15">
+            </div>
+            <div class="task">
+                <label>History Essay</label>
+                <input type="checkbox" class="taskCheck" data-points="20">
+            </div>
+        </div>
+        
+        <div class="points">
+            Points Earned: <span id="points">0</span>
+        </div>
+
+        <!-- Input Section for Adding Custom Tasks -->
+        <div class="input-section">
+            <input type="text" id="taskInput" placeholder="Enter your study task...">
+            <button id="addTaskButton" onclick="addTask()">Add Task</button>
+        </div>
+
+        <ul id="taskList"></ul>
+
+        <div class="footer">
+            <p>Keep your study organized and productive!</p>
+        </div>
+    </div>
+
+    <!-- Chatbot Section -->
+    <div class="chat-container">
+        <h2>Ask a Question</h2>
+        <div class="chat-box" id="chatBox"></div>
+        <input type="text" id="userInput" placeholder="Ask me anything..." onkeydown="if(event.key === 'Enter') sendMessage()">
+    </div>
+
+    <script>
+        // Login Logic
+        function login(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Simulate a simple login check (You can replace this with a more complex check)
+            if (username && password) {
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('studyPlannerPage').style.display = 'block';
+            }
+        }
+
+        // Task Planner Logic
+        let taskChecks = document.querySelectorAll('.taskCheck');
+        let pointsDisplay = document.getElementById('points');
+        let totalPoints = 0;
+
+        taskChecks.forEach(task => {
+            task.addEventListener('change', () => {
+                if (task.checked) {
+                    totalPoints += parseInt(task.getAttribute('data-points'));
+                } else {
+                    totalPoints -= parseInt(task.getAttribute('data-points'));
+                }
+                pointsDisplay.textContent = totalPoints;
+            });
+        });
+
+        // Add Custom Task
+        function addTask() {
+            const taskInput = document.getElementById('taskInput').value;
+            if (taskInput.trim() !== "") {
+                const taskList = document.getElementById('taskList');
+                const newTask = document.createElement('div');
+                newTask.classList.add('task');
+                newTask.innerHTML = `
+                    <label>${taskInput}</label>
+                    <input type="checkbox" class="taskCheck" data-points="10">
+                `;
+                taskList.appendChild(newTask);
+                document.getElementById('taskInput').value = "";
+            }
+        }
+
+        // Chatbot Logic
+        function sendMessage() {
+            let userMessage = document.getElementById('userInput').value;
+            if (userMessage.trim() !== "") {
+                addMessage(userMessage, 'student-message');
+                document.getElementById('userInput').value = "";
+
+                // Basic chatbot logic for demonstration
+                setTimeout(() => {
+                    let botResponse = "I'm here to help you with your studies!";
+                    addMessage(botResponse, 'bot-message');
+                }, 1000);
+            }
+        }
+
+        function addMessage(message, sender) {
+            let chatBox = document.getElementById('chatBox');
+            let messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender);
+            messageDiv.textContent = message;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight; // Keep scroll at bottom
+        }
+    </script>
+</body>
+</html>
